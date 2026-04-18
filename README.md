@@ -55,15 +55,50 @@ Skill otomatik olarak tetiklenir. Örnek kullanımlar:
 
 ## Dosya Yapısı
 
+Repoda kaynak dosyalar `source/` altındadır; `.skill` arşivi bunlardan üretilir.
+
 ```
-turkce-imla-anlatim/
+source/turkce-imla-anlatim/
 ├── SKILL.md                        # Ana talimatlar ve kontrol süreci
 ├── references/
 │   ├── imla-kurallari.md           # 26 bölüm yazım kuralı
 │   └── anlatim-bozukluklari.md     # 13 kategori anlatım bozukluğu
 └── scripts/
-    └── tdk_kontrol.py              # TDK Sözlük API sorgu script'i
+    ├── tdk_kontrol.py              # TDK Sözlük API sorgu script'i
+    └── test_tdk_kontrol.py         # Temel test seti
 ```
+
+## Geliştirme
+
+`.skill` arşivini yeniden oluşturmak için:
+
+```bash
+./build.sh
+```
+
+Script değişikliklerini test etmek için:
+
+```bash
+python3 source/turkce-imla-anlatim/scripts/test_tdk_kontrol.py
+```
+
+### Ortam Değişkenleri
+
+`tdk_kontrol.py` şu ortam değişkenlerini dinler:
+
+| Değişken | Varsayılan | Açıklama |
+|---|---|---|
+| `TDK_KONTROL_NO_CACHE` | yok | `1` yapılırsa yerel cache devre dışı |
+| `TDK_KONTROL_NO_STEM` | yok | `1` yapılırsa morfoloji fallback kapanır |
+| `TDK_KONTROL_CACHE_DIR` | `~/.cache/tdk-kontrol` | Cache dizini |
+| `TDK_KONTROL_CACHE_TTL` | `604800` (7 gün) | Cache süresi (saniye) |
+
+### Morfoloji Fallback
+
+Çekimli biçimler (örn. `halılarımızın`, `denemeleriydi`) TDK sözlük maddesi
+değildir ve doğrudan sorguda "bulunamadı" döner. Script, eşleşme olmazsa
+aşamalı ek sıyırma ile kök arar: `halılarımızın → halılarımız → halılar → halı`.
+Kök bulunursa uyarı etiketiyle birlikte döndürülür.
 
 ## Lisans
 
